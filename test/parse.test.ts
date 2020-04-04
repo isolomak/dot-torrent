@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import { parse, parseFile } from '../lib/dotTorrent';
 import bencodec from 'bencodec';
-import crypto from "crypto";
+import crypto from 'crypto';
 
 describe('Parse tests', () => {
 

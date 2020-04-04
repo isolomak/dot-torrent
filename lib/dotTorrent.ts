@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { TorrentParser } from './TorrentParser/TorrentParser';
+import { TorrentParser } from './TorrentParser';
 
 export function parse(data: string | Buffer) {
 	return new TorrentParser(data).parse();

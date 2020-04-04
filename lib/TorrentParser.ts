@@ -1,6 +1,6 @@
 import bencodec from 'bencodec';
 import crypto from 'crypto';
-import { IDotTorrent, IDotTorrentFile, ITorrent } from '../types';
+import { IDotTorrent, IDotTorrentFile, ITorrent } from './types';
 
 export class TorrentParser {
 

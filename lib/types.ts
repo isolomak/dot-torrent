@@ -31,7 +31,7 @@ export interface IDotTorrent {
 	createdBy: string | null;
 	createdAt: number | null;
 	encoding: string | null;
-	files: IDotTorrentFile[],
+	files: IDotTorrentFile[];
 	infoHash: string;
 	name: string | null;
 	pieceLength: number;
