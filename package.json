@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/IvanSolomakhin/dot-torrent#readme",
   "dependencies": {
-    "bencodec": "^2.1.1"
+    "bencodec": "^2.1.2"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
