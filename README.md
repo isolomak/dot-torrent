@@ -2,8 +2,8 @@
 [![NPM](https://nodei.co/npm/dot-torrent.png)](https://npmjs.org/package/dot-torrent)
 
 ![ci](https://github.com/IvanSolomakhin/dot-torrent/workflows/ci/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/IvanSolomakhin/dot-torrent/badge.svg)](https://coveralls.io/github/IvanSolomakhin/magnetizer)
-[![NPM Downloads](https://img.shields.io/npm/dt/dot-torrent)](https://npmjs.org/package/magnetizer)
+[![Coverage Status](https://coveralls.io/repos/github/IvanSolomakhin/dot-torrent/badge.svg)](https://coveralls.io/github/IvanSolomakhin/dot-torrent)
+[![NPM Downloads](https://img.shields.io/npm/dt/dot-torrent)](https://npmjs.org/package/dot-torrent)
 [![NPM License](https://img.shields.io/npm/l/dot-torrent)](LICENSE)
 
 ## Dot-Torrent
