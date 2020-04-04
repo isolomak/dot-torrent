@@ -39,6 +39,8 @@
     "typescript": "^3.8.3"
   },
   "files": [
-    "build/**/*"
+    "build/**/*",
+    "README.md",
+    "LICENSE"
   ]
 }

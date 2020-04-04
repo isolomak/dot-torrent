@@ -1,11 +1,13 @@
 
 [![NPM](https://nodei.co/npm/dot-torrent.png)](https://npmjs.org/package/dot-torrent)
 
-[![build](https://circleci.com/gh/IvanSolomakhin/dot-torrent.svg?style=shield)](https://app.circleci.com/pipelines/github/IvanSolomakhin/dot-torrent)
-[![codecov](https://codecov.io/gh/IvanSolomakhin/dot-torrent/branch/master/graph/badge.svg)](https://codecov.io/gh/IvanSolomakhin/dot-torrent)
+![ci](https://github.com/IvanSolomakhin/dot-torrent/workflows/ci/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/IvanSolomakhin/dot-torrent/badge.svg)](https://coveralls.io/github/IvanSolomakhin/magnetizer)
+[![NPM Downloads](https://img.shields.io/npm/dt/dot-torrent)](https://npmjs.org/package/magnetizer)
+[![NPM License](https://img.shields.io/npm/l/dot-torrent)](LICENSE)
 
 ## Dot-Torrent
-  Library for decoding and encoding [torrent](https://en.wikipedia.org/wiki/Torrent_file) files.  
+  Library for parsing and creating [torrent](https://en.wikipedia.org/wiki/Torrent_file) files.  
   
   Fast and easy to use.  
   Written in TypeScript.  
