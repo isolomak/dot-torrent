@@ -1,14 +1,8 @@
 {
   "defaultSeverity": "error",
-  "jsRules": {
-    "max-line-length": {
-      "options": [150]
-    }
-  },
   "rules": {
     "align": [
       true,
-      "arguments",
       "elements",
       "members",
       "parameters",
@@ -53,6 +47,5 @@
     "quotemark": [true, "single"],
     "variable-name": [ true, "check-format", "allow-leading-underscore", "ban-keywords" ],
     "whitespace": [ true, "check-branch", "check-decl", "check-operator", "check-separator", "check-type" ]
-  },
-  "rulesDirectory": []
+  }
 }

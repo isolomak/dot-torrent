@@ -1,22 +1,41 @@
+export interface ITorrentFile {
+	length: number;
+	path: Buffer[] | string[];
+}
+
+export interface ISourceFile {
+	fullPath: string;
+	relativePath: string;
+	length: number;
+}
+
+export interface ITorrentInfo {
+	files: ITorrentFile[];
+	name: Buffer| string;
+	'piece length': number;
+	pieces: Buffer;
+	private?: number;
+}
+
 export interface ITorrent {
-	announce: Buffer;
-	'announce-list': Array<Array<Buffer>>;
-	comment: Buffer;
-	'created by': Buffer;
-	'creation date': number;
-	encoding: Buffer;
-	info: {
-		files: [{
-			length: number;
-			path: Buffer[];
-		}];
-		name: Buffer;
-		'piece length': number;
-		pieces: Buffer;
-		private: number;
-	};
-	publisher: Buffer;
-	'publisher-url': Buffer;
+	announce: Buffer | string;
+	'announce-list': Array<Array<Buffer | string>>;
+	comment?: Buffer | string;
+	'created by'?: Buffer | string;
+	'creation date'?: number;
+	encoding?: Buffer | string;
+	info: ITorrentInfo;
+	publisher?: Buffer | string;
+	'publisher-url'?: Buffer | string;
+}
+
+export interface IDotTorrentParams {
+	announceList: string[];
+	source: string;
+	comment?: string;
+	private?: boolean;
+	publisher?: string;
+	publisherUrl?: string;
 }
 
 export interface IDotTorrentFile {

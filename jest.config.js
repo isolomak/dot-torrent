@@ -3,7 +3,7 @@ module.exports = {
     testEnvironment: 'node',
     verbose: true,
     collectCoverage: true,
-    reporters: [ 'default' ],
+    // reporters: [ 'default' ],
     coverageThreshold: {
         global: {
             branches: 100,

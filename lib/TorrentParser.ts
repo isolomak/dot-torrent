@@ -167,7 +167,7 @@ export class TorrentParser {
 
 	private _getInfoHash() {
 		return crypto.createHash('sha1')
-			.update(bencodec.encode(this._rawTorrent.info || ''))
+			.update(bencodec.encode(this._rawTorrent.info as { [key: string]: any } || ''))
 			.digest('hex');
 	}
 
