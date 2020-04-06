@@ -1,6 +1,6 @@
 {
   "name": "dot-torrent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Library for parsing and creating torrent files.",
   "main": "build/dotTorrent.js",
   "scripts": {
