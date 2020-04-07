@@ -2,8 +2,8 @@ import * as assert from 'assert';
 import bencodec from 'bencodec';
 import * as fs from 'fs';
 import * as path from 'path';
-import { create } from '../lib/dotTorrent';
-import { BencodeDictionary } from 'bencodec/build/types';
+import { create } from '../src';
+import { BencodeDictionary } from 'bencodec/lib/types';
 
 const deleteFolderRecursively = (filePath: string) => {
 	if (fs.existsSync(filePath)) {
@@ -37,12 +37,13 @@ describe('Create torrent file tests', () => {
 	describe('Validation tests', () => {
 
 		test('should throw error if outPath is invalid', async () => {
-			let f = () => {};
+			// tslint:disable-next-line: no-empty
+			let f = () => { };
 			try {
 				await create({
 					announceList: [],
 					source: './test/testSources/directorySource',
-				}, '/someRandom/directory/on/the/system');
+				},           '/someRandom/directory/on/the/system');
 			} catch (err) {
 				f = () => { throw err; };
 			} finally {
@@ -64,28 +65,28 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList,
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				result['announce'],
+				result.announce,
 				Buffer.from(announceList[0])
 			);
 		});
 
 		test('should not create "announce" if "announce-list" is empty', async () => {
-			const announceList: string[] = [];
+			const announceList: Array<string> = [];
 
 			await create({
 				announceList,
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				result['announce'],
+				result.announce,
 				undefined,
 			);
 		});
@@ -102,7 +103,7 @@ describe('Create torrent file tests', () => {
 					'https://testtracker-3.net/testtopic.php?t=3333333',
 				],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
@@ -120,7 +121,7 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
@@ -135,7 +136,7 @@ describe('Create torrent file tests', () => {
 				// @ts-ignore - for testing purposes
 				announceList: 'string',
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
@@ -156,12 +157,12 @@ describe('Create torrent file tests', () => {
 				announceList: [],
 				comment,
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				result['comment'],
+				result.comment,
 				Buffer.from(comment)
 			);
 		});
@@ -170,12 +171,12 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				result['comment'],
+				result.comment,
 				undefined
 			);
 		});
@@ -188,7 +189,7 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
@@ -206,7 +207,7 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
@@ -224,12 +225,12 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				result['encoding'],
+				result.encoding,
 				Buffer.from('UTF-8')
 			);
 		});
@@ -242,13 +243,13 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				resultInfo['files'],
+				resultInfo.files,
 				[
 					{ length: 61372, path: [ Buffer.from('file_1.txt') ] },
 					{ length: 61372, path: [ Buffer.from('subDirectory/file_2.txt') ] },
@@ -260,13 +261,13 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource/file_1.txt',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				resultInfo['files'],
+				resultInfo.files,
 				[]
 			);
 		});
@@ -279,13 +280,13 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource/file_1.txt',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				resultInfo['length'],
+				resultInfo.length,
 				61372
 			);
 		});
@@ -294,13 +295,13 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				resultInfo['length'],
+				resultInfo.length,
 				undefined
 			);
 		});
@@ -313,7 +314,7 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
@@ -332,13 +333,13 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				resultInfo['pieces'],
+				resultInfo.pieces,
 				Buffer.from(
 					'3eff5f50e9dd7bacb19f9bc626ddf738cababc55b8e271be82851dfe5642cb3dcc67f1f57f633a54c289c2d95860b46f5140874fdee92061d55ec3a0130b19c2a5f5c7236b1e63296e84c13ddd5ff140',
 					'hex'
@@ -355,13 +356,13 @@ describe('Create torrent file tests', () => {
 			await create({
 				announceList: [],
 				source: './test/testSources/directorySource',
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				resultInfo['private'],
+				resultInfo.private,
 				0
 			);
 		});
@@ -371,13 +372,13 @@ describe('Create torrent file tests', () => {
 				announceList: [],
 				source: './test/testSources/directorySource',
 				private: true
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				resultInfo['private'],
+				resultInfo.private,
 				1
 			);
 		});
@@ -387,13 +388,13 @@ describe('Create torrent file tests', () => {
 				announceList: [],
 				source: './test/testSources/directorySource',
 				private: false
-			}, OUT_PATH);
+			},           OUT_PATH);
 
 			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
 			const resultInfo = result.info as BencodeDictionary;
 
 			assert.deepStrictEqual(
-				resultInfo['private'],
+				resultInfo.private,
 				0
 			);
 		});

@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { parseFile } from '../lib/dotTorrent';
+import { parseFile } from '../src';
 
 describe('Parse file tests', () => {
 
@@ -17,8 +17,8 @@ describe('Parse file tests', () => {
 			createdAt: 1585998070,
 			encoding: 'UTF-8',
 			files: [
-				{length: 16, path: 'file_1.txt'},
-				{length: 16, path: 'file_2.txt'}
+				{ length: 16, path: 'file_1.txt' },
+				{ length: 16, path: 'file_2.txt' }
 			],
 			infoHash: '46bf9dd414eae4cd74fa4d129d2f23553a21bca7',
 			name: 'test_torrent',

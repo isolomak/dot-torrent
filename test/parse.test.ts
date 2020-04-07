@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { parse } from '../lib/dotTorrent';
+import { parse } from '../src';
 import bencodec from 'bencodec';
 import crypto from 'crypto';
 
@@ -169,7 +169,7 @@ describe('Parse tests', () => {
 	describe('infoHash field tests', () => {
 
 		test('should create infoHash from info', () => {
-			const info = {};
+			const info = { };
 			const result = parse(bencodec.encode({ info }));
 			assert.deepStrictEqual(result.infoHash, crypto.createHash('sha1')
 				.update(bencodec.encode(info))
@@ -232,7 +232,7 @@ describe('Parse tests', () => {
 		});
 
 		test('should return false no private field', () => {
-			const result = parse(bencodec.encode({ info: {} }));
+			const result = parse(bencodec.encode({ info: { } }));
 			assert.deepStrictEqual(result.private, false);
 		});
 
