@@ -1,11 +1,14 @@
 import bencodec from 'bencodec';
 import crypto from 'crypto';
-import { IDotTorrent, IDotTorrentFile, ITorrent } from './types';
+import { IDotTorrent, IDotTorrentFile, ITorrent } from '../types';
 
-export class TorrentParser {
+export default class TorrentParser {
 
 	private readonly _rawTorrent: ITorrent;
 
+	/**
+	 * Constructor
+	 */
 	constructor(data: Buffer | string) {
 		const decodedData = bencodec.decode(data);
 
@@ -16,35 +19,44 @@ export class TorrentParser {
 		this._rawTorrent = decodedData as unknown as ITorrent;
 	}
 
+	/**
+	 * Parse torrent file
+	 */
 	public parse(): IDotTorrent {
 		return {
-			announce: this._parseAnnounce(),
-			announceList: this._parseAnnounceList(),
-			comment: this._parseComment(),
-			createdBy: this._parseCreatedBy(),
-			createdAt: this._parseCreationDate(),
-			encoding: this._parseEncoding(),
-			files: this._parseFiles(),
-			infoHash: this._getInfoHash(),
-			name: this._parseName(),
-			pieceLength: this._parsePieceLength(),
-			pieces: this._parsePieces(),
-			private: this._parsePrivate(),
-			publisher: this._parsePublisher(),
-			publisherUrl: this._parsePublisherUrl(),
+			announce: this._announce(),
+			announceList: this._announceList(),
+			comment: this._comment(),
+			createdBy: this._createdBy(),
+			createdAt: this._creationDate(),
+			encoding: this._encoding(),
+			files: this._files(),
+			infoHash: this._infoHash(),
+			name: this._name(),
+			pieceLength: this._pieceLength(),
+			pieces: this._pieces(),
+			private: this._private(),
+			publisher: this._publisher(),
+			publisherUrl: this._publisherUrl(),
 		};
 	}
 
-	private _parseAnnounce() {
+	/**
+	 * Get announce
+	 */
+	private _announce() {
 		if (!this._rawTorrent.announce) {
 			return null;
 		}
 		return this._rawTorrent.announce.toString('utf-8');
 	}
 
-	private _parseAnnounceList() {
+	/**
+	 * Get announceList
+	 */
+	private _announceList() {
 		const announceList = new Set<string>();
-		const announceValue = this._parseAnnounce();
+		const announceValue = this._announce();
 
 		if (announceValue) {
 			announceList.add(announceValue);
@@ -63,36 +75,51 @@ export class TorrentParser {
 		return Array.from(announceList);
 	}
 
-	private _parseComment() {
+	/**
+	 * Get comment
+	 */
+	private _comment() {
 		if (!this._rawTorrent.comment) {
 			return null;
 		}
 		return this._rawTorrent.comment.toString('utf-8');
 	}
 
-	private _parseCreatedBy() {
+	/**
+	 * Get createdBy
+	 */
+	private _createdBy() {
 		if (!this._rawTorrent['created by']) {
 			return null;
 		}
 		return this._rawTorrent['created by'].toString('utf-8');
 	}
 
-	private _parseCreationDate() {
+	/**
+	 * Get creationDate
+	 */
+	private _creationDate() {
 		if (!this._rawTorrent['creation date']) {
 			return null;
 		}
 		return this._rawTorrent['creation date'];
 	}
 
-	private _parseEncoding() {
+	/**
+	 * Get encoding
+	 */
+	private _encoding() {
 		if (!this._rawTorrent.encoding) {
 			return null;
 		}
 		return this._rawTorrent.encoding.toString('utf-8');
 	}
 
-	private _parseFiles() {
-		const files: IDotTorrentFile[] = [];
+	/**
+	 * Get files
+	 */
+	private _files() {
+		const files: Array<IDotTorrentFile> = [];
 
 		if (!this._rawTorrent.info || !this._rawTorrent.info.files) {
 			return files;
@@ -112,24 +139,33 @@ export class TorrentParser {
 		return files;
 	}
 
-	private _parseName() {
+	/**
+	 * Get name
+	 */
+	private _name() {
 		if (!this._rawTorrent.info || !this._rawTorrent.info.name) {
 			return null;
 		}
 		return this._rawTorrent.info.name.toString('utf-8');
 	}
 
-	private _parsePieceLength() {
+	/**
+	 * Get pieceLength
+	 */
+	private _pieceLength() {
 		if (!this._rawTorrent.info || !this._rawTorrent.info['piece length']) {
 			return 0;
 		}
 		return this._rawTorrent.info['piece length'];
 	}
 
-	private _parsePieces() {
-		const pieces: Buffer[] = [];
+	/**
+	 * Get pieces
+	 */
+	private _pieces() {
+		const pieces: Array<Buffer> = [];
 
-		const pieceLength = this._parsePieceLength();
+		const pieceLength = this._pieceLength();
 
 		if (!pieceLength || !this._rawTorrent.info || !this._rawTorrent.info.pieces) {
 			return [];
@@ -144,28 +180,40 @@ export class TorrentParser {
 		return pieces;
 	}
 
-	private _parsePrivate() {
+	/**
+	 * Get private
+	 */
+	private _private() {
 		if (!this._rawTorrent.info) {
 			return false;
 		}
 		return !!this._rawTorrent.info.private;
 	}
 
-	private _parsePublisher() {
+	/**
+	 * Get publisher
+	 */
+	private _publisher() {
 		if (!this._rawTorrent.publisher) {
 			return null;
 		}
 		return this._rawTorrent.publisher.toString('utf-8');
 	}
 
-	private _parsePublisherUrl() {
+	/**
+	 * Get publisherUrl
+	 */
+	private _publisherUrl() {
 		if (!this._rawTorrent['publisher-url']) {
 			return null;
 		}
 		return this._rawTorrent['publisher-url'].toString('utf-8');
 	}
 
-	private _getInfoHash() {
+	/**
+	 * Get infoHash
+	 */
+	private _infoHash() {
 		return crypto.createHash('sha1')
 			.update(bencodec.encode(this._rawTorrent.info as { [key: string]: any } || ''))
 			.digest('hex');
