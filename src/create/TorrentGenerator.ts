@@ -1,5 +1,6 @@
 import bencodec from 'bencodec';
 import * as fs from 'fs';
+import * as path from 'path';
 import { BencodeDictionary } from 'bencodec/lib/types';
 import { ICreateTorrentParams } from '../types';
 import SourceParser from './SourceParser';
@@ -141,7 +142,9 @@ export default class TorrentGenerator {
 	 * Set 'name' field to torrent info
 	 */
 	private _name() {
-		// TODO
+		this._torrentInfo.name = this._parameters.name
+			? this._parameters.name
+			: path.basename(this._parameters.source);
 	}
 
 	/**
@@ -174,14 +177,19 @@ export default class TorrentGenerator {
 	 * Set 'publisher' field
 	 */
 	private _publisher() {
-		// TODO
+		if (this._parameters.publisher) {
+			this._torrent.publisher = this._parameters.publisher;
+		}
 	}
 
 	/**
 	 * Set 'publisher-url' field
 	 */
 	private _publisherUrl() {
-		// TODO
+		// TODO: validate url
+		if (this._parameters.publisherUrl) {
+			this._torrent['publisher-url'] = this._parameters.publisherUrl;
+		}
 	}
 
 }

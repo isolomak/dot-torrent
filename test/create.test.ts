@@ -308,6 +308,43 @@ describe('Create torrent file tests', () => {
 
 	});
 
+	describe('Name tests', () => {
+
+		test('should create "name" field from provided name', async () => {
+			const name = 'TestName';
+
+			await create({
+				announceList: [],
+				name,
+				source: './test/testSources/directorySource/file_1.txt',
+			},           OUT_PATH);
+
+			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
+			const resultInfo = result.info as BencodeDictionary;
+
+			assert.deepStrictEqual(
+				resultInfo.name,
+				Buffer.from(name)
+			);
+		});
+
+		test('should create "name" field from source basename if name is not privaded', async () => {
+			await create({
+				announceList: [],
+				source: './test/testSources/directorySource',
+			},           OUT_PATH);
+
+			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
+			const resultInfo = result.info as BencodeDictionary;
+
+			assert.deepStrictEqual(
+				resultInfo.name,
+				Buffer.from('directorySource')
+			);
+		});
+
+	});
+
 	describe('PieceLength tests', () => {
 
 		test('should create "piece length" field', async () => {
@@ -396,6 +433,76 @@ describe('Create torrent file tests', () => {
 			assert.deepStrictEqual(
 				resultInfo.private,
 				0
+			);
+		});
+
+	});
+
+	describe('Publisher tests', () => {
+
+		test('should create "publisher" field', async () => {
+			const publisher = 'isolomak';
+
+			await create({
+				announceList: [],
+				publisher,
+				source: './test/testSources/directorySource',
+			},           OUT_PATH);
+
+			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
+
+			assert.deepStrictEqual(
+				result.publisher,
+				Buffer.from(publisher)
+			);
+		});
+
+		test('should not create "publisher" field if not provided', async () => {
+			await create({
+				announceList: [],
+				source: './test/testSources/directorySource',
+			},           OUT_PATH);
+
+			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
+
+			assert.deepStrictEqual(
+				result.publisher,
+				undefined
+			);
+		});
+
+	});
+
+	describe('PublisherUrl tests', () => {
+
+		test('should create "publisher-url" field', async () => {
+			const publisherUrl = 'http://test-url.com';
+
+			await create({
+				announceList: [],
+				publisherUrl,
+				source: './test/testSources/directorySource',
+			},           OUT_PATH);
+
+			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
+
+			assert.deepStrictEqual(
+				result['publisher-url'],
+				Buffer.from(publisherUrl)
+			);
+		});
+
+		test('should not create "publisher-url" field if not provided', async () => {
+			await create({
+				announceList: [],
+				source: './test/testSources/directorySource',
+			},           OUT_PATH);
+
+			const result = bencodec.decode(fs.readFileSync(OUT_PATH)) as BencodeDictionary;
+
+			assert.deepStrictEqual(
+				result['publisher-url'],
+				undefined
 			);
 		});
 

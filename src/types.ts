@@ -49,6 +49,7 @@ export interface ICreateTorrentParams {
 	announceList: Array<string>;
 	source: string;
 	comment?: string;
+	name?: string;
 	private?: boolean;
 	publisher?: string;
 	publisherUrl?: string;
