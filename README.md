@@ -31,7 +31,7 @@
 ### Parse torrent file
 
 ``` typescript
-  // parse from the Buffer or string
+  // parse from the Buffer or the string
   const torrent = dotTorrent.parse( fs.readFileSync('path/to/the/file.torrent') );
   // parse file
   const torrent = dotTorrent.parseFile('path/to/the/file.torrent');
