@@ -11,6 +11,7 @@ export interface ITorrentFile {
  */
 export interface ITorrentInfo {
 	'files': Array<ITorrentFile>;
+	'length'?: number;
 	'name': Buffer | string;
 	'piece length': number;
 	'pieces': Buffer;
@@ -81,4 +82,5 @@ export interface IDotTorrent {
 	private: boolean;
 	publisher: string | null;
 	publisherUrl: string | null;
+	totalLength: number;
 }

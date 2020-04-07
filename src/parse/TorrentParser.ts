@@ -38,6 +38,7 @@ export default class TorrentParser {
 			private: this._private(),
 			publisher: this._publisher(),
 			publisherUrl: this._publisherUrl(),
+			totalLength: this._totalLength()
 		};
 	}
 
@@ -121,7 +122,20 @@ export default class TorrentParser {
 	private _files() {
 		const files: Array<IDotTorrentFile> = [];
 
-		if (!this._rawTorrent.info || !this._rawTorrent.info.files) {
+		if (!this._rawTorrent.info) {
+			return files;
+		}
+
+		if (!this._rawTorrent.info.files  || !this._rawTorrent.info.files.length) {
+
+			if (!this._rawTorrent.info.name) {
+				return files;
+			}
+
+			files.push({
+				length: this._rawTorrent.info.length || 0,
+				path: this._rawTorrent.info.name.toString('utf-8')
+			});
 			return files;
 		}
 
@@ -208,6 +222,21 @@ export default class TorrentParser {
 			return null;
 		}
 		return this._rawTorrent['publisher-url'].toString('utf-8');
+	}
+
+	/**
+	 * Get total files length
+	 */
+	private _totalLength() {
+		let totalLength = 0;
+
+		const files = this._files();
+
+		for (let i = 0; i < files.length; i++) {
+			totalLength += files[i].length;
+		}
+
+		return totalLength;
 	}
 
 	/**

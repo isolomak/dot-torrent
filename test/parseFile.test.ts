@@ -27,7 +27,8 @@ describe('Parse file tests', () => {
 			pieces: [ Buffer.from('4d92fb3893cc6ed5fbd0392dda657459b4675605', 'hex') ],
 			private: true,
 			publisher: null,
-			publisherUrl: null
+			publisherUrl: null,
+			totalLength: 32
 		});
 	});
 

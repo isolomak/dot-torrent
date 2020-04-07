@@ -5,7 +5,7 @@ import crypto from 'crypto';
 
 describe('Parse tests', () => {
 
-	describe('validation tests', () => {
+	describe('Validation tests', () => {
 
 		test('should throw error on string', () => {
 			assert.throws(() => parse('https://testtracker-1.net/testtopic.php?t=1111111'));
@@ -18,7 +18,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('announce field tests', () => {
+	describe('Announce field tests', () => {
 
 		test('should parse announce field', () => {
 			const result = parse(bencodec.encode({ announce: 'https://testtracker-1.net/testtopic.php?t=1111111' }));
@@ -27,7 +27,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('announceList field tests', () => {
+	describe('AnnounceList field tests', () => {
 
 		test('should parse announce list', () => {
 			const announceList = [
@@ -78,7 +78,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('comment field tests', () => {
+	describe('Comment field tests', () => {
 
 		test('should parse comment field', () => {
 			const result = parse(bencodec.encode({ comment: 'Test comment' }));
@@ -87,7 +87,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('createdBy field tests', () => {
+	describe('CreatedBy field tests', () => {
 
 		test('should parse createdBy field', () => {
 			const result = parse(bencodec.encode({ 'created by': 'isolomak' }));
@@ -96,7 +96,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('createdAt field tests', () => {
+	describe('CreatedAt field tests', () => {
 
 		test('should parse createdAt field', () => {
 			const result = parse(bencodec.encode({ 'creation date': 1585998070 }));
@@ -105,7 +105,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('encoding field tests', () => {
+	describe('Encoding field tests', () => {
 
 		test('should parse encoding field', () => {
 			const result = parse(bencodec.encode({ encoding: 'UTF-8' }));
@@ -114,7 +114,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('files field tests', () => {
+	describe('Files field tests', () => {
 
 		test('should parse files', () => {
 			const result = parse(bencodec.encode({
@@ -164,9 +164,22 @@ describe('Parse tests', () => {
 			assert.deepStrictEqual(result.files[0].path, 'test_file_1.txt');
 		});
 
+		test('should add name and length to files for single file torrent', () => {
+			const result = parse(bencodec.encode({
+				info: {
+					name: 'test_file.txt',
+					length: 100500
+				}
+			}));
+
+			assert.deepStrictEqual(result.files.length, 1);
+			assert.deepStrictEqual(result.files[0].length, 100500);
+			assert.deepStrictEqual(result.files[0].path, 'test_file.txt');
+		});
+
 	});
 
-	describe('infoHash field tests', () => {
+	describe('InfoHash field tests', () => {
 
 		test('should create infoHash from info', () => {
 			const info = { };
@@ -178,7 +191,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('name field tests', () => {
+	describe('Name field tests', () => {
 
 		test('should parse name field', () => {
 			const result = parse(bencodec.encode({ info: { name: 'test_file.name.zip' } }));
@@ -187,7 +200,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('pieceLength field tests', () => {
+	describe('PieceLength field tests', () => {
 
 		test('should parse piece length', () => {
 			const result = parse(bencodec.encode({ info: { 'piece length': 32768 } }));
@@ -196,7 +209,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('pieces field tests', () => {
+	describe('Pieces field tests', () => {
 
 		test('should parse pieces', () => {
 			const result = parse(bencodec.encode({
@@ -219,7 +232,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('private field tests', () => {
+	describe('Private field tests', () => {
 
 		test('should return true if private', () => {
 			const result = parse(bencodec.encode({ info: { private: 1 } }));
@@ -238,7 +251,7 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('publisher field tests', () => {
+	describe('Publisher field tests', () => {
 
 		test('should parse publisher field', () => {
 			const result = parse(bencodec.encode({ publisher: 'Faketracker' }));
@@ -247,11 +260,45 @@ describe('Parse tests', () => {
 
 	});
 
-	describe('publisherUrl field tests', () => {
+	describe('PublisherUrl field tests', () => {
 
 		test('should parse publisherUrl field', () => {
 			const result = parse(bencodec.encode({ 'publisher-url': 'https://faketracker.com/announce' }));
 			assert.deepStrictEqual(result.publisherUrl, 'https://faketracker.com/announce');
+		});
+
+	});
+
+	describe('TotalLength tests', () => {
+
+		test('should get total length of files', () => {
+			const result = parse(bencodec.encode({
+				info: {
+					files: [
+						{
+							length: 100500,
+							path: [ 'test_file_1.txt' ]
+						},
+						{
+							length: 500100,
+							path: [ 'test_file_2.txt' ]
+						},
+					]
+				}
+			}));
+
+			assert.deepStrictEqual(result.totalLength, 100500 + 500100);
+		});
+
+		test('should get total length from length field if single file torrent', () => {
+			const result = parse(bencodec.encode({
+				info: {
+					name: 'test_file.txt',
+					length: 100500
+				}
+			}));
+
+			assert.deepStrictEqual(result.totalLength, 100500);
 		});
 
 	});
