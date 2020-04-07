@@ -5,6 +5,7 @@ describe('Parse file tests', () => {
 
 	test('should parse file', () => {
 		const result = parseFile('./test/test.torrent');
+
 		assert.deepStrictEqual(result, {
 			announce: 'https://testtracker-1.net/testtopic.php?t=1111111',
 			announceList: [
