@@ -32,6 +32,8 @@ export default class TorrentGenerator {
 
 			// TODO: validate mandatory fields
 
+			this._sourceParser.parseSource();
+
 			this._announce();
 			this._announceList();
 			this._comment();
