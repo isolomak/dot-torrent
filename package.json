@@ -42,7 +42,7 @@
   },
   "types": "./lib/index.d.ts",
   "files": [
-    "build/**/*",
+    "lib/**/*",
     "LICENSE"
   ]
 }
