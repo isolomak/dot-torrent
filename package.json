@@ -2,11 +2,12 @@
   "name": "dot-torrent",
   "version": "0.3.0",
   "description": "Library for parsing and creating torrent files.",
-  "main": "build/dotTorrent.js",
+  "main": "./lib/index.js",
   "scripts": {
     "build": "./node_modules/.bin/tsc",
-    "test": "./node_modules/.bin/jest --runInBand --passWithNoTests",
-    "prepare": "npm run build",
+    "lint": "./node_modules/tslint/bin/tslint -p . -c tslint.json",
+    "test": "npm run lint && ./node_modules/.bin/jest --runInBand --passWithNoTests",
+    "prepare": "npm run lint && npm run build",
     "prepublishOnly": "npm test"
   },
   "repository": {
@@ -28,18 +29,20 @@
   },
   "homepage": "https://github.com/IvanSolomakhin/dot-torrent#readme",
   "dependencies": {
-    "bencodec": "^2.1.2"
+    "bencodec": "^2.3.1"
   },
   "devDependencies": {
-    "@types/jest": "^25.1.4",
-    "@types/node": "^13.9.8",
-    "jest": "^25.2.4",
-    "ts-jest": "^25.3.0",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.11.0",
+    "jest": "^25.2.7",
+    "ts-jest": "^25.3.1",
+    "tslint": "^6.1.1",
+    "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.8.3"
   },
+  "types": "./lib/index.d.ts",
   "files": [
     "build/**/*",
-    "README.md",
     "LICENSE"
   ]
 }
