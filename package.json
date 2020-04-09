@@ -20,7 +20,10 @@
     "bittorent",
     "parse",
     "parser",
-    "file"
+    "file",
+    "read",
+    "create",
+    "generate"
   ],
   "author": "isolomak",
   "license": "MIT",
