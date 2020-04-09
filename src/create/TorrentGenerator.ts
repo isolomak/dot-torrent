@@ -19,10 +19,14 @@ export default class TorrentGenerator {
 	 */
 	constructor(parameters: ICreateTorrentParams) {
 		this._parameters = parameters;
-		this._pieceCollector = new PieceCollector();
-		this._sourceParser = new SourceParser(this._parameters.source);
 		this._torrent = { };
 		this._torrentInfo = { };
+
+		this._sourceParser = new SourceParser(this._parameters.source);
+		this._pieceCollector = new PieceCollector(
+			this._sourceParser.getFilePathList(),
+			this._sourceParser.getTotalFilesSize()
+		);
 	}
 
 	/**
@@ -32,8 +36,6 @@ export default class TorrentGenerator {
 		return new Promise(async (resolve, reject) => {
 
 			// TODO: validate mandatory fields
-
-			this._sourceParser.parseSource();
 
 			this._announce();
 			this._announceList();
@@ -151,18 +153,14 @@ export default class TorrentGenerator {
 	 * Set 'piece length' field to torrent info
 	 */
 	private _pieceLength() {
-		return this._torrentInfo['piece length'] = 32768; // 262144;
+		return this._torrentInfo['piece length'] = this._pieceCollector.getPieceLength();
 	}
 
+	/**
+	 * Set 'pieces' field to torrent info
+	 */
 	private async _pieces() {
-		const files = this._sourceParser.getFiles();
-		const filePathList: Array<string> = [];
-
-		for (let i = 0; i < files.length; i++) {
-			filePathList.push( files[i].fullPath );
-		}
-
-		await this._pieceCollector.collectFromFiles(filePathList);
+		await this._pieceCollector.collectFromFiles();
 		this._torrentInfo.pieces = this._pieceCollector.getPieces();
 	}
 

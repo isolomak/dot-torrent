@@ -358,7 +358,7 @@ describe('Create torrent file tests', () => {
 
 			assert.deepStrictEqual(
 				resultInfo['piece length'],
-				32768
+				16384
 			);
 		});
 
@@ -378,7 +378,7 @@ describe('Create torrent file tests', () => {
 			assert.deepStrictEqual(
 				resultInfo.pieces,
 				Buffer.from(
-					'3eff5f50e9dd7bacb19f9bc626ddf738cababc55b8e271be82851dfe5642cb3dcc67f1f57f633a54c289c2d95860b46f5140874fdee92061d55ec3a0130b19c2a5f5c7236b1e63296e84c13ddd5ff140',
+					'ad94bc52e5ff7282c34975e31e90b45b0fdbbc4d590d9b1882c45d1770934bcd5ffd9cb413d44b66eb943d44262d065ae9fbf014cfb4297b58ea85c30ec0745314c6ec17a61a11f6ec6e1c3ff074a259b7c9b586fef0f1a1748b721a1e4b878d09934434b21a5dbcf3c707be7df9a1d410345f1ff7529efc4fa9a4f617032f1abb8c9127ccb4719a546968175d13e9ebdb1bc0f53f23cb52c683616d30e5d50a',
 					'hex'
 				)
 			);

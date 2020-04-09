@@ -27,17 +27,8 @@ export default class SourceParser {
 	constructor(source: string) {
 		this._files = [];
 		this._source = source;
-	}
 
-	/**
-	 * Parse source and collect files info
-	 */
-	public parseSource() {
-		const stats = fs.lstatSync(this._source);
-
-		if (stats.isDirectory()) {
-			this._collectDirectoryFilesRecursively(this._source);
-		}
+		this._parseSource();
 	}
 
 	/**
@@ -45,6 +36,32 @@ export default class SourceParser {
 	 */
 	public getFiles() {
 		return this._files;
+	}
+
+	/**
+	 * Get all file locations
+	 */
+	public getFilePathList() {
+		const filePathList: Array<string> = [];
+
+		for (let i = 0; i < this._files.length; i++) {
+			filePathList.push( this._files[i].fullPath );
+		}
+
+		return filePathList;
+	}
+
+	/**
+	 * Get total of files size
+	 */
+	public getTotalFilesSize() {
+		let total = 0;
+
+		for (let i = 0; i < this._files.length; i++) {
+			total += this._files[i].length;
+		}
+
+		return total;
 	}
 
 	/**
@@ -56,6 +73,17 @@ export default class SourceParser {
 			relativePath: SourceParser._getRelativePath(this._source, filePath),
 			length: size ? size : fs.lstatSync(this._source).size,
 		};
+	}
+
+	/**
+	 * Parse source and collect files info
+	 */
+	private _parseSource() {
+		const stats = fs.lstatSync(this._source);
+
+		if (stats.isDirectory()) {
+			this._collectDirectoryFilesRecursively(this._source);
+		}
 	}
 
 	/**
