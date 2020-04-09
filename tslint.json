@@ -171,6 +171,7 @@
 			false
 		],
 		"await-promise": true,
-		"no-floating-promises": true
+    "no-floating-promises": true,
+    "strict-type-predicates": true
   }
 }

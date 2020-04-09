@@ -1,7 +1,7 @@
 {
   "name": "dot-torrent",
   "version": "1.0.1",
-  "description": "Library for parsing and creating torrent files.",
+  "description": "Parse and create torrent files.",
   "main": "./lib/index.js",
   "scripts": {
     "build": "./node_modules/.bin/tsc",

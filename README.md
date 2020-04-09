@@ -8,7 +8,7 @@
 
 ## Dot-Torrent
 
-  Library for parsing and creating [torrent](https://en.wikipedia.org/wiki/Torrent_file) files.  
+  Parse and create [torrent](https://en.wikipedia.org/wiki/Torrent_file) files.  
   
   Fast and easy to use.  
   Written in TypeScript.  
