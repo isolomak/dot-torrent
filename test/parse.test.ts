@@ -1,7 +1,7 @@
-import * as assert from 'assert';
-import { parse } from '../src';
+import assert from 'assert';
 import bencodec from 'bencodec';
 import crypto from 'crypto';
+import { parse } from '../src';
 
 describe('Parse tests', () => {
 
@@ -145,6 +145,7 @@ describe('Parse tests', () => {
 			const result = parse(bencodec.encode({
 				info: {
 					files: [
+						Buffer.from('test_string'),
 						{
 							length: 100500,
 							path: [ 'test_file_1.txt' ]
@@ -155,6 +156,10 @@ describe('Parse tests', () => {
 						{
 							path: [ 'test_file_2.txt' ]
 						},
+						{
+							path: [ 100500 ],
+							length: 100500,
+						}
 					]
 				}
 			}));
@@ -175,6 +180,17 @@ describe('Parse tests', () => {
 			assert.deepStrictEqual(result.files.length, 1);
 			assert.deepStrictEqual(result.files[0].length, 100500);
 			assert.deepStrictEqual(result.files[0].path, 'test_file.txt');
+		});
+
+		test('should not add invalid file to files for single file torrent', () => {
+			const result = parse(bencodec.encode({
+				info: {
+					name: 100500,
+					length: 100500
+				}
+			}));
+
+			assert.deepStrictEqual(result.files.length, 0);
 		});
 
 	});
@@ -244,9 +260,9 @@ describe('Parse tests', () => {
 			assert.deepStrictEqual(result.private, false);
 		});
 
-		test('should return false no private field', () => {
+		test('should return null no private field', () => {
 			const result = parse(bencodec.encode({ info: { } }));
-			assert.deepStrictEqual(result.private, false);
+			assert.deepStrictEqual(result.private, null);
 		});
 
 	});

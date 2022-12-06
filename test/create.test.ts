@@ -1,9 +1,9 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import bencodec from 'bencodec';
-import * as fs from 'fs';
-import * as path from 'path';
-import { create } from '../src';
 import { BencodeDictionary } from 'bencodec/lib/types';
+import fs from 'fs';
+import path from 'path';
+import { create } from '../src';
 
 const deleteFolderRecursively = (filePath: string) => {
 	if (fs.existsSync(filePath)) {
@@ -37,16 +37,14 @@ describe('Create torrent file tests', () => {
 	describe('Validation tests', () => {
 
 		test('should throw error if outPath is invalid', async () => {
-			// tslint:disable-next-line: no-empty
 			let f = () => { };
 			try {
-				await create({
-					announceList: [],
-					source: './test/testSources/directorySource',
-				},           '/someRandom/directory/on/the/system');
-			} catch (err) {
+				await create({ announceList: [], source: './test/testSources/directorySource' }, '/someRandom/directory/on/the/system');
+			}
+			catch (err) {
 				f = () => { throw err; };
-			} finally {
+			}
+			finally {
 				assert.throws(f);
 			}
 		});
