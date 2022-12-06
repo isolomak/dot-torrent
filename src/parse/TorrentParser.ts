@@ -1,75 +1,73 @@
-import bencodec from 'bencodec';
+import bencodec, { BencodeDictionary, BencodeTypes } from 'bencodec';
 import crypto from 'crypto';
-import { IDotTorrent, IDotTorrentFile, ITorrent } from '../types';
+import { IDotTorrent, IDotTorrentFileInfo } from '../types';
 
 export default class TorrentParser {
-
-	private readonly _rawTorrent: ITorrent;
 
 	/**
 	 * Constructor
 	 */
-	constructor(data: Buffer | string) {
-		const decodedData = bencodec.decode(data);
-
-		if (Array.isArray(decodedData) || typeof decodedData !== 'object' || Buffer.isBuffer(decodedData)) {
-			throw new Error('Invalid data');
-		}
-
-		this._rawTorrent = decodedData as unknown as ITorrent;
-	}
+	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
+	constructor() {}
 
 	/**
 	 * Parse torrent file
 	 */
-	public parse(): IDotTorrent {
+	public parse(data: Buffer | string): IDotTorrent {
+		const decodedData = bencodec.decode(data) as BencodeDictionary;;
+
+		if (Array.isArray(decodedData) || Buffer.isBuffer(decodedData) || typeof decodedData !== 'object') {
+			throw new Error('TorrentParser failed to parse torrent. Invalid data');
+		}
+
 		return {
-			announce: this._announce(),
-			announceList: this._announceList(),
-			comment: this._comment(),
-			createdBy: this._createdBy(),
-			createdAt: this._creationDate(),
-			encoding: this._encoding(),
-			files: this._files(),
-			infoHash: this._infoHash(),
-			name: this._name(),
-			pieceLength: this._pieceLength(),
-			pieces: this._pieces(),
-			private: this._private(),
-			publisher: this._publisher(),
-			publisherUrl: this._publisherUrl(),
-			totalLength: this._totalLength()
+			announce: TorrentParser._announce(decodedData),
+			announceList: TorrentParser._announceList(decodedData),
+			comment: TorrentParser._comment(decodedData),
+			createdBy: TorrentParser._createdBy(decodedData),
+			createdAt: TorrentParser._creationDate(decodedData),
+			encoding: TorrentParser._encoding(decodedData),
+			files: TorrentParser._files(decodedData),
+			infoHash: TorrentParser._infoHash(decodedData),
+			name: TorrentParser._name(decodedData),
+			pieceLength: TorrentParser._pieceLength(decodedData),
+			pieces: TorrentParser._pieces(decodedData),
+			private: TorrentParser._private(decodedData),
+			publisher: TorrentParser._publisher(decodedData),
+			publisherUrl: TorrentParser._publisherUrl(decodedData),
+			totalLength: TorrentParser._totalLength(decodedData)
 		};
 	}
 
 	/**
 	 * Get announce
 	 */
-	private _announce() {
-		if (!this._rawTorrent.announce) {
-			return null;
-		}
-		return this._rawTorrent.announce.toString('utf-8');
+	private static _announce(decodedData: BencodeDictionary): string | null {
+		return TorrentParser._getStringFromBencode(decodedData.announce);
 	}
 
 	/**
 	 * Get announceList
 	 */
-	private _announceList() {
+	private static _announceList(decodedData: BencodeDictionary): Array<string> {
 		const announceList = new Set<string>();
-		const announceValue = this._announce();
+		const announceValue = TorrentParser._announce(decodedData);
 
 		if (announceValue) {
 			announceList.add(announceValue);
 		}
 
-		if (!this._rawTorrent['announce-list']) {
+		if (!Array.isArray(decodedData['announce-list'])) {
 			return Array.from(announceList);
 		}
 
-		for (const announceWrapperArray of this._rawTorrent['announce-list']) {
-			for (const announce of announceWrapperArray) {
-				announceList.add(announce.toString('utf-8'));
+		for (const announceItem of decodedData['announce-list']) {
+			if (Array.isArray(announceItem)) {
+				for (const announce of announceItem) {
+					if (Buffer.isBuffer(announce)) {
+						announceList.add(announce.toString('utf-8'));
+					}
+				}
 			}
 		}
 
@@ -79,115 +77,126 @@ export default class TorrentParser {
 	/**
 	 * Get comment
 	 */
-	private _comment() {
-		if (!this._rawTorrent.comment) {
-			return null;
-		}
-		return this._rawTorrent.comment.toString('utf-8');
+	private static _comment(decodedData: BencodeDictionary): string | null {
+		return TorrentParser._getStringFromBencode(decodedData.comment);
 	}
 
 	/**
 	 * Get createdBy
 	 */
-	private _createdBy() {
-		if (!this._rawTorrent['created by']) {
-			return null;
-		}
-		return this._rawTorrent['created by'].toString('utf-8');
+	private static _createdBy(decodedData: BencodeDictionary): string | null {
+		return TorrentParser._getStringFromBencode(decodedData['created by']);
 	}
 
 	/**
 	 * Get creationDate
 	 */
-	private _creationDate() {
-		if (!this._rawTorrent['creation date']) {
+	private static _creationDate(decodedData: BencodeDictionary): number | null {
+		if (typeof decodedData['creation date'] !== 'number') {
 			return null;
 		}
-		return this._rawTorrent['creation date'];
+
+		return decodedData['creation date'];
 	}
 
 	/**
 	 * Get encoding
 	 */
-	private _encoding() {
-		if (!this._rawTorrent.encoding) {
-			return null;
-		}
-		return this._rawTorrent.encoding.toString('utf-8');
+	private static _encoding(decodedData: BencodeDictionary): string | null {
+		return TorrentParser._getStringFromBencode(decodedData.encoding);
 	}
 
 	/**
 	 * Get files
 	 */
-	private _files() {
-		const files: Array<IDotTorrentFile> = [];
+	private static _files(decodedData: BencodeDictionary): Array<IDotTorrentFileInfo> {
+		const torrentInfo = TorrentParser._info(decodedData);
 
-		if (!this._rawTorrent.info) {
-			return files;
+		if (!torrentInfo) {
+			return [];
 		}
 
-		if (!this._rawTorrent.info.files  || !this._rawTorrent.info.files.length) {
+		const fileMap: Map<string, number> = new Map();
 
-			if (!this._rawTorrent.info.name) {
-				return files;
+		// Single file
+		if (!Array.isArray(torrentInfo.files) || !torrentInfo.files.length) {
+			if (!torrentInfo.name || typeof torrentInfo.length !== 'number') {
+				return [];
 			}
 
-			files.push({
-				length: this._rawTorrent.info.length || 0,
-				path: this._rawTorrent.info.name.toString('utf-8')
-			});
-			return files;
-		}
-
-		for (const file of this._rawTorrent.info.files) {
-			if (!file.path || !file.length) {
-				continue ;
+			const filePath = TorrentParser._getStringFromBencode(torrentInfo.name);
+	
+			if (!filePath) {
+				return [];
 			}
 
-			files.push({
-				length: file.length,
-				path: file.path[0].toString('utf-8'),
-			});
+			fileMap.set(filePath, torrentInfo.length);
+		}
+		// Multiple files
+		else {
+			for (const fileInfo of torrentInfo.files) {
+				if (Buffer.isBuffer(fileInfo) || Array.isArray(fileInfo) || typeof fileInfo !== 'object') {
+					continue ;
+				}
+	
+				if (typeof fileInfo.length !== 'number' || !Array.isArray(fileInfo.path)) {
+					continue ;
+				}
+
+				const filePath = TorrentParser._getStringFromBencode(fileInfo.path[0]);
+	
+				if (!filePath) {
+					continue ;
+				}
+	
+				fileMap.set(filePath, fileInfo.length);
+			}
 		}
 
-		return files;
+		return Array.from(fileMap.entries())
+			.map(([ key, value ]) => ({ path: key, length: value }));
 	}
 
 	/**
 	 * Get name
 	 */
-	private _name() {
-		if (!this._rawTorrent.info || !this._rawTorrent.info.name) {
+	private static _name(decodedData: BencodeDictionary): string | null {
+		const torrentInfo = TorrentParser._info(decodedData);
+
+		if (!torrentInfo || !torrentInfo.name) {
 			return null;
 		}
-		return this._rawTorrent.info.name.toString('utf-8');
+
+		return TorrentParser._getStringFromBencode(torrentInfo.name);
 	}
 
 	/**
 	 * Get pieceLength
 	 */
-	private _pieceLength() {
-		if (!this._rawTorrent.info || !this._rawTorrent.info['piece length']) {
-			return 0;
-		}
-		return this._rawTorrent.info['piece length'];
+	private static _pieceLength(decodedData: BencodeDictionary): number | null {
+		const torrentInfo = TorrentParser._info(decodedData);
+
+		return torrentInfo && typeof torrentInfo['piece length'] === 'number'
+			? torrentInfo['piece length']
+			: null;
 	}
 
 	/**
 	 * Get pieces
 	 */
-	private _pieces() {
-		const pieces: Array<Buffer> = [];
+	private static _pieces(decodedData: BencodeDictionary): Array<Buffer> {
+		const torrentInfo = TorrentParser._info(decodedData);
+		const pieceLength = TorrentParser._pieceLength(decodedData);
 
-		const pieceLength = this._pieceLength();
-
-		if (!pieceLength || !this._rawTorrent.info || !this._rawTorrent.info.pieces) {
+		if (!torrentInfo || !pieceLength || !Buffer.isBuffer(torrentInfo.pieces)) {
 			return [];
 		}
 
-		for (let i = 0; i < this._rawTorrent.info.pieces.length; i += pieceLength) {
+		const pieces: Array<Buffer> = [];
+
+		for (let i = 0; i < torrentInfo.pieces.length; i += pieceLength) {
 			pieces.push(
-				this._rawTorrent.info.pieces.slice(i, i + pieceLength)
+				torrentInfo.pieces.subarray(i, i + pieceLength)
 			);
 		}
 
@@ -197,55 +206,67 @@ export default class TorrentParser {
 	/**
 	 * Get private
 	 */
-	private _private() {
-		if (!this._rawTorrent.info) {
-			return false;
-		}
-		return !!this._rawTorrent.info.private;
+	private static _private(decodedData: BencodeDictionary): boolean | null {
+		const torrentInfo = TorrentParser._info(decodedData);
+
+		return torrentInfo && typeof torrentInfo.private === 'number'
+			? Boolean(torrentInfo.private)
+			: null;
 	}
 
 	/**
 	 * Get publisher
 	 */
-	private _publisher() {
-		if (!this._rawTorrent.publisher) {
-			return null;
-		}
-		return this._rawTorrent.publisher.toString('utf-8');
+	private static _publisher(decodedData: BencodeDictionary): string | null {
+		return TorrentParser._getStringFromBencode(decodedData.publisher);
 	}
 
 	/**
 	 * Get publisherUrl
 	 */
-	private _publisherUrl() {
-		if (!this._rawTorrent['publisher-url']) {
-			return null;
-		}
-		return this._rawTorrent['publisher-url'].toString('utf-8');
+	private static _publisherUrl(decodedData: BencodeDictionary): string | null {
+		return TorrentParser._getStringFromBencode(decodedData['publisher-url']);
 	}
 
 	/**
 	 * Get total files length
 	 */
-	private _totalLength() {
-		let totalLength = 0;
+	private static _totalLength(decodedData: BencodeDictionary): number | null {
+		const files = TorrentParser._files(decodedData);
 
-		const files = this._files();
-
-		for (let i = 0; i < files.length; i++) {
-			totalLength += files[i].length;
+		if (!files.length) {
+			return null;
 		}
 
-		return totalLength;
+		return files.reduce((acc, next) => acc += next.length, 0);
 	}
 
 	/**
 	 * Get infoHash
 	 */
-	private _infoHash() {
+	private static _infoHash(decodedData: BencodeDictionary): string {
 		return crypto.createHash('sha1')
-			.update(bencodec.encode(this._rawTorrent.info as { [key: string]: any } || ''))
+			.update(bencodec.encode(TorrentParser._info(decodedData) || ''))
 			.digest('hex');
+	}
+
+	/**
+	 * Get torrent info
+	 */
+	private static _info(decodedData: BencodeDictionary): BencodeDictionary | null {
+		if (!decodedData.info || Buffer.isBuffer(decodedData.info) || Array.isArray(decodedData.info) || typeof decodedData.info !== 'object') {
+			return null;
+		}
+
+		return decodedData.info;
+	}
+
+	private static _getStringFromBencode(data: BencodeTypes): string | null {
+		if (!data || !Buffer.isBuffer(data)) {
+			return null;
+		}
+
+		return data.toString('utf-8');
 	}
 
 }

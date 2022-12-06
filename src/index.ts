@@ -1,28 +1,47 @@
-import * as fs from 'fs';
-import { ICreateTorrentParams } from './types';
+import { readFileSync } from 'fs';
+import { readFile } from 'fs/promises';
 import TorrentGenerator from './create/TorrentGenerator';
 import TorrentParser from './parse/TorrentParser';
+import { ICreateTorrentParams, IDotTorrent } from './types';
+
+export * from './types';
+export { create, parse, parseFromFileSync, parseFromFileAsync, TorrentParser, TorrentGenerator };
 
 /**
  * Parse torrent from Buffer or string
  */
-function parse(data: Buffer | string) {
-	return new TorrentParser(data).parse();
+function parse(data: Buffer | string): IDotTorrent {
+	const torrentParser = new TorrentParser();
+	return torrentParser.parse(data);
 }
 
 /**
- * Parse torrent file
+ * Parse torrent from file sync
  */
-function parseFile(filePath: string) {
-	return new TorrentParser(fs.readFileSync(filePath)).parse();
+function parseFromFileSync(filePath: string): IDotTorrent {
+	const torrentParser = new TorrentParser();
+
+	const data = readFileSync(filePath);
+
+	return torrentParser.parse(data);
+}
+
+/**
+ * Parse torrent from file async
+ */
+async function parseFromFileAsync(filePath: string): Promise<IDotTorrent> {
+	const torrentParser = new TorrentParser();
+
+	const data = await readFile(filePath);
+
+	return torrentParser.parse(data);
 }
 
 /**
  * Create torrent file
  */
-function create(parameters: ICreateTorrentParams, outPath: string) {
+async function create(parameters: ICreateTorrentParams, outPath: string): Promise<boolean> {
 	return new TorrentGenerator(parameters).create(outPath);
 }
 
-export { parse, parseFile, create };
-export default { parse, parseFile, create };
+export default { create, parse, parseFromFileSync, parseFromFileAsync };

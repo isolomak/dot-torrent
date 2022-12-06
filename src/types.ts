@@ -1,40 +1,4 @@
 /**
- * A list of dictionaries each corresponding to a file (only when multiple files are being shared)
- */
-export interface ITorrentFile {
-	'length': number;
-	'path': Array<Buffer> | Array<string>;
-}
-
-/**
- * This maps to a dictionary whose keys are dependent on whether one or more files are being shared
- */
-export interface ITorrentInfo {
-	'files': Array<ITorrentFile>;
-	'length'?: number;
-	'name': Buffer | string;
-	'piece length': number;
-	'pieces': Buffer;
-	'private'?: number;
-}
-
-/**
- * A torrent file contains a list of files and integrity metadata about all the pieces,
- * and optionally contains a list of trackers
- */
-export interface ITorrent {
-	'announce': Buffer | string;
-	'announce-list': Array<Array<Buffer | string>>;
-	'comment'?: Buffer | string;
-	'created by'?: Buffer | string;
-	'creation date'?: number;
-	'encoding'?: Buffer | string;
-	'info': ITorrentInfo;
-	'publisher'?: Buffer | string;
-	'publisher-url'?: Buffer | string;
-}
-
-/**
  * Parsed file info from provided source
  */
 export interface ISourceFileInfo {
@@ -59,7 +23,7 @@ export interface ICreateTorrentParams {
 /**
  * Parsed torrent file interface
  */
-export interface IDotTorrentFile {
+export interface IDotTorrentFileInfo {
 	length: number;
 	path: string;
 }
@@ -74,13 +38,13 @@ export interface IDotTorrent {
 	createdBy: string | null;
 	createdAt: number | null;
 	encoding: string | null;
-	files: Array<IDotTorrentFile>;
+	files: Array<IDotTorrentFileInfo>;
 	infoHash: string;
 	name: string | null;
-	pieceLength: number;
+	pieceLength: number | null;
 	pieces: Array<Buffer>;
-	private: boolean;
+	private: boolean | null;
 	publisher: string | null;
 	publisherUrl: string | null;
-	totalLength: number;
+	totalLength: number | null;
 }
