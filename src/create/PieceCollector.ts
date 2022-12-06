@@ -21,7 +21,7 @@ export default class PieceCollector {
 	/**
 	 * Calculate piece length
 	 */
-	public getPieceLength() {
+	public getPieceLength(): number {
 		return Math.max(16384, 1 << Math.log2(this._totalLength < 1024
 			? 1
 			: this._totalLength / 1024) + 0.5 | 0);
@@ -30,9 +30,9 @@ export default class PieceCollector {
 	/**
 	 * Read files and collect pieces
 	 */
-	public async collectFromFiles() {
-		for (let i = 0; i < this._files.length; i++) {
-			await this._readFile(this._files[i]);
+	public async collectFromFiles(): Promise<void> {
+		for (const file of this._files) {
+			await this._readFile(file);
 		}
 		this._flushBuffer();
 	}
@@ -40,14 +40,14 @@ export default class PieceCollector {
 	/**
 	 * Get collected pieces
 	 */
-	public getPieces() {
+	public getPieces(): Buffer {
 		return Buffer.concat(this._pieces);
 	}
 
 	/**
-	 * Process buffer remainings
+	 * Process remaining buffer
 	 */
-	private _flushBuffer() {
+	private _flushBuffer(): void {
 		while (this._buffer.length) {
 			this._collectPiece();
 		}
@@ -56,7 +56,7 @@ export default class PieceCollector {
 	/**
 	 * Read file
 	 */
-	private _readFile(filePath: string) {
+	private async _readFile(filePath: string): Promise<unknown> {
 		return new Promise((resolve, reject) => {
 			const stream = fs.createReadStream(filePath);
 
@@ -69,7 +69,7 @@ export default class PieceCollector {
 	/**
 	 * File data stream listener
 	 */
-	private _onFileData(data: Buffer) {
+	private _onFileData(data: Buffer): void {
 		this._buffer = Buffer.concat([ this._buffer, data ]);
 
 		while (this._buffer.length > this.getPieceLength()) {
@@ -80,7 +80,7 @@ export default class PieceCollector {
 	/**
 	 * Extract pieces from buffer
 	 */
-	private _collectPiece() {
+	private _collectPiece(): void {
 		const piece = this._buffer.slice(0, this.getPieceLength());
 		this._buffer = this._buffer.slice(this.getPieceLength());
 		this._pieces.push(

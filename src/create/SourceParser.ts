@@ -1,22 +1,8 @@
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 import { ISourceFileInfo } from '../types';
-import * as fs from 'fs';
 
 export default class SourceParser {
-
-	/**
-	 * Get the file path relative to the source
-	 */
-	private static _getRelativePath(source: string, filePath: string) {
-		return path.relative(source, filePath);
-	}
-
-	/**
-	 * Get full path to the file
-	 */
-	private static _getFullPath(filePath: string) {
-		return path.resolve(filePath);
-	}
 
 	private _files: Array<ISourceFileInfo>;
 	private readonly _source: string;
@@ -34,18 +20,18 @@ export default class SourceParser {
 	/**
 	 * Get files info
 	 */
-	public getFiles() {
+	public getFiles(): Array<ISourceFileInfo> {
 		return this._files;
 	}
 
 	/**
 	 * Get all file locations
 	 */
-	public getFilePathList() {
+	public getFilePathList(): Array<string> {
 		const filePathList: Array<string> = [];
 
-		for (let i = 0; i < this._files.length; i++) {
-			filePathList.push( this._files[i].fullPath );
+		for (const file of this._files) {
+			filePathList.push( file.fullPath );
 		}
 
 		return filePathList;
@@ -54,11 +40,11 @@ export default class SourceParser {
 	/**
 	 * Get total of files size
 	 */
-	public getTotalFilesSize() {
+	public getTotalFilesSize(): number {
 		let total = 0;
 
-		for (let i = 0; i < this._files.length; i++) {
-			total += this._files[i].length;
+		for (const file of this._files) {
+			total += file.length;
 		}
 
 		return total;
@@ -67,10 +53,10 @@ export default class SourceParser {
 	/**
 	 * Get file info
 	 */
-	public getFileInfo(filePath: string, size?: number) {
+	public getFileInfo(filePath: string, size?: number): { fullPath: string; relativePath: string; length: number; } {
 		return {
-			fullPath: SourceParser._getFullPath(filePath),
-			relativePath: SourceParser._getRelativePath(this._source, filePath),
+			fullPath: path.resolve(filePath),
+			relativePath: path.relative(this._source, filePath),
 			length: size ? size : fs.lstatSync(this._source).size,
 		};
 	}
@@ -78,7 +64,7 @@ export default class SourceParser {
 	/**
 	 * Parse source and collect files info
 	 */
-	private _parseSource() {
+	private _parseSource(): void {
 		const stats = fs.lstatSync(this._source);
 
 		if (stats.isDirectory()) {
@@ -87,9 +73,9 @@ export default class SourceParser {
 	}
 
 	/**
-	 * Find all files in directory and collent info
+	 * Find all files in directory and collect info
 	 */
-	private _collectDirectoryFilesRecursively(directoryPath: string) {
+	private _collectDirectoryFilesRecursively(directoryPath: string): void {
 		const files = fs.readdirSync(directoryPath);
 
 		for (const file of files) {

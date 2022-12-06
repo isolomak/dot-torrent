@@ -1,10 +1,10 @@
 import bencodec from 'bencodec';
-import * as fs from 'fs';
-import * as path from 'path';
 import { BencodeDictionary } from 'bencodec/lib/types';
+import fs from 'fs';
+import path from 'path';
 import { ICreateTorrentParams } from '../types';
-import SourceParser from './SourceParser';
 import PieceCollector from './PieceCollector';
+import SourceParser from './SourceParser';
 
 export default class TorrentGenerator {
 
@@ -32,7 +32,7 @@ export default class TorrentGenerator {
 	/**
 	 * Create torrent file
 	 */
-	public create(outPath: string): Promise<boolean> {
+	public async create(outPath: string): Promise<boolean> {
 		return new Promise(async (resolve, reject) => {
 
 			// TODO: validate mandatory fields
@@ -64,7 +64,7 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'announce' fields
 	 */
-	private _announce() {
+	private _announce(): void {
 		if (Array.isArray(this._parameters.announceList) && this._parameters.announceList[0]) {
 			this._torrent.announce = this._parameters.announceList[0];
 		}
@@ -73,7 +73,7 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'announce-list' field
 	 */
-	private _announceList() {
+	private _announceList(): void {
 		const announceList: Array<Array<string>> = [];
 
 		if (Array.isArray(this._parameters.announceList)) {
@@ -88,7 +88,7 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'comment' field
 	 */
-	private _comment() {
+	private _comment(): void {
 		if (this._parameters.comment) {
 			this._torrent.comment = this._parameters.comment;
 		}
@@ -97,21 +97,21 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'created by' field
 	 */
-	private _createdBy() {
+	private _createdBy(): void {
 		this._torrent['created by'] = 'https://www.npmjs.com/package/dot-torrent';
 	}
 
 	/**
 	 * Set 'creation date' field
 	 */
-	private _creationDate() {
+	private _creationDate(): void {
 		this._torrent['creation date'] = Math.ceil(Date.now() / 1000);
 	}
 
 	/**
 	 * Set 'encoding' field
 	 */
-	private _encoding() {
+	private _encoding(): void {
 		this._torrent.encoding = 'UTF-8';
 	}
 
@@ -119,7 +119,7 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'files' field to torrent info
 	 */
-	private _files() {
+	private _files(): void {
 		const files = this._sourceParser.getFiles();
 
 		this._torrentInfo.files = files.map(file => {
@@ -131,7 +131,7 @@ export default class TorrentGenerator {
 	 * Set 'length' field to torrent info
 	 * only for single file torrent
 	 */
-	private _length() {
+	private _length(): void {
 		const files = this._sourceParser.getFiles();
 
 		if (!files.length) {
@@ -143,7 +143,7 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'name' field to torrent info
 	 */
-	private _name() {
+	private _name(): void {
 		this._torrentInfo.name = this._parameters.name
 			? this._parameters.name
 			: path.basename(this._parameters.source);
@@ -152,14 +152,14 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'piece length' field to torrent info
 	 */
-	private _pieceLength() {
-		return this._torrentInfo['piece length'] = this._pieceCollector.getPieceLength();
+	private _pieceLength(): void {
+		this._torrentInfo['piece length'] = this._pieceCollector.getPieceLength();
 	}
 
 	/**
 	 * Set 'pieces' field to torrent info
 	 */
-	private async _pieces() {
+	private async _pieces(): Promise<void> {
 		await this._pieceCollector.collectFromFiles();
 		this._torrentInfo.pieces = this._pieceCollector.getPieces();
 	}
@@ -167,14 +167,14 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'private' field to torrent info
 	 */
-	private _private() {
+	private _private(): void {
 		this._torrentInfo.private = !!this._parameters.private ? 1 : 0;
 	}
 
 	/**
 	 * Set 'publisher' field
 	 */
-	private _publisher() {
+	private _publisher(): void {
 		if (this._parameters.publisher) {
 			this._torrent.publisher = this._parameters.publisher;
 		}
@@ -183,7 +183,7 @@ export default class TorrentGenerator {
 	/**
 	 * Set 'publisher-url' field
 	 */
-	private _publisherUrl() {
+	private _publisherUrl(): void {
 		// TODO: validate url
 		if (this._parameters.publisherUrl) {
 			this._torrent['publisher-url'] = this._parameters.publisherUrl;
