@@ -26,6 +26,7 @@ export interface ICreateTorrentParams {
 export interface IDotTorrentFileInfo {
 	length: number;
 	path: string;
+	offset: number;
 }
 
 /**

@@ -5,12 +5,6 @@ import { IDotTorrent, IDotTorrentFileInfo } from '../types';
 export default class TorrentParser {
 
 	/**
-	 * Constructor
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
-	constructor() {}
-
-	/**
 	 * Parse torrent file
 	 */
 	public parse(data: Buffer | string): IDotTorrent {
@@ -153,8 +147,19 @@ export default class TorrentParser {
 			}
 		}
 
-		return Array.from(fileMap.entries())
+		const files = Array.from(fileMap.entries())
 			.map(([ key, value ]) => ({ path: key, length: value }));
+
+		return files
+			.map((item, index) => {
+				let offset = 0;
+
+				files
+					.filter((_, internalIndex) => internalIndex < index)
+					.forEach(({ length }) => { offset += length; });
+
+				return { ...item, offset };
+			});
 	}
 
 	/**
@@ -163,7 +168,7 @@ export default class TorrentParser {
 	private static _name(decodedData: BencodeDictionary): string | null {
 		const torrentInfo = TorrentParser._info(decodedData);
 
-		if (!torrentInfo || !torrentInfo.name) {
+		if (!torrentInfo?.name) {
 			return null;
 		}
 
@@ -238,7 +243,7 @@ export default class TorrentParser {
 			return null;
 		}
 
-		return files.reduce((acc, next) => acc += next.length, 0);
+		return files.reduce((acc, next) => acc + next.length, 0);
 	}
 
 	/**
