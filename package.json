@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/isolomak/dot-torrent#readme",
   "dependencies": {
-    "bencodec": "^2.4.3"
+    "bencodec": "^3.0.1"
   },
   "devDependencies": {
     "@types/jest": "^29.2.3",

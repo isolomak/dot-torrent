@@ -2,6 +2,7 @@ import assert from 'assert';
 import bencodec from 'bencodec';
 import crypto from 'crypto';
 import { parse } from '../src';
+import { join } from 'path';
 
 describe('Parse tests', () => {
 
@@ -191,6 +192,38 @@ describe('Parse tests', () => {
 			}));
 
 			assert.deepStrictEqual(result.files.length, 0);
+		});
+
+		test('should parse nested files', () => {
+			const result = parse(bencodec.encode({
+				info: {
+					files: [
+						{
+							length: 100500,
+							path: [ 
+								'folder',
+								'nested_folder',
+								'test_file_1.txt'
+							]
+						},
+						{
+							length: 500100,
+							path: [
+								'folder',
+								'other_test_file.txt'
+							]
+						},
+					]
+				}
+			}));
+
+			assert.deepStrictEqual(result.files.length, 2);
+
+			assert.deepStrictEqual(result.files[0].length, 100500);
+			assert.deepStrictEqual(result.files[1].length, 500100);
+
+			assert.deepStrictEqual(result.files[0].path, join('folder', 'nested_folder', 'test_file_1.txt'));
+			assert.deepStrictEqual(result.files[1].path, join('folder', 'other_test_file.txt'));
 		});
 
 	});
