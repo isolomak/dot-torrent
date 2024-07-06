@@ -160,6 +160,10 @@ describe('Parse tests', () => {
 						{
 							path: [ 100500 ],
 							length: 100500,
+						},
+						{
+							path: [ ],
+							length: 100500,
 						}
 					]
 				}

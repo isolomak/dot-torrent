@@ -134,7 +134,11 @@ export default class TorrentParser {
 					continue ;
 				}
 	
-				if (typeof fileInfo.length !== 'number' || !Array.isArray(fileInfo.path) || !fileInfo.path?.length) {
+				if (typeof fileInfo.length !== 'number' || !Array.isArray(fileInfo.path)) {
+					continue ;
+				}
+
+				if (!fileInfo.path.length) {
 					continue ;
 				}
 
@@ -145,10 +149,6 @@ export default class TorrentParser {
 				}
 
 				const filePath = join(...pathItems as Array<string>);
-	
-				if (!filePath) {
-					continue ;
-				}
 	
 				fileMap.set(filePath, fileInfo.length);
 			}
