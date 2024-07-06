@@ -274,13 +274,20 @@ describe('Parse tests', () => {
 			assert.deepStrictEqual(result.pieces, [ Buffer.from('4d92fb3893cc6ed5fbd0392dda657459b4675605', 'hex') ]);
 		});
 
-		test('should return empty array if no piece length', () => {
+		test('should split pieces', () => {
 			const result = parse(bencodec.encode({
 				info: {
-					pieces: Buffer.from('4d92fb3893cc6ed5fbd0392dda657459b4675605', 'hex')
+					'piece length': 32768,
+					pieces: Buffer.concat([
+						Buffer.from('4d92fb3893cc6ed5fbd0392dda657459b4675605', 'hex'),
+						Buffer.from('1234567890abcdef1234567890abcdef12345678', 'hex'),
+					]) 
 				}
 			}));
-			assert.deepStrictEqual(result.pieces, []);
+			assert.deepStrictEqual(result.pieces, [
+				Buffer.from('4d92fb3893cc6ed5fbd0392dda657459b4675605', 'hex'),
+				Buffer.from('1234567890abcdef1234567890abcdef12345678', 'hex'),
+			]);
 		});
 
 	});

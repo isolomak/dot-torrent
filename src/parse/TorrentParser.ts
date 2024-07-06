@@ -198,17 +198,18 @@ export default class TorrentParser {
 	 */
 	private static _pieces(decodedData: BencodeDictionary): Array<Buffer> {
 		const torrentInfo = TorrentParser._info(decodedData);
-		const pieceLength = TorrentParser._pieceLength(decodedData);
 
-		if (!torrentInfo || !pieceLength || !Buffer.isBuffer(torrentInfo.pieces)) {
+		if (!torrentInfo || !Buffer.isBuffer(torrentInfo.pieces)) {
 			return [];
 		}
 
+		// console.log(torrentInfo.pieces.length, torrentInfo.pieces[0], pieceLength);
+
 		const pieces: Array<Buffer> = [];
 
-		for (let i = 0; i < torrentInfo.pieces.length; i += pieceLength) {
+		for (let i = 0; i < torrentInfo.pieces.length; i += 20) {
 			pieces.push(
-				torrentInfo.pieces.subarray(i, i + pieceLength)
+				torrentInfo.pieces.subarray(i, i + 20)
 			);
 		}
 
