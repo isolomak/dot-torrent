@@ -1,6 +1,7 @@
 import bencodec, { BencodeDictionary, BencodeTypes } from 'bencodec';
 import crypto from 'crypto';
 import { IDotTorrent, IDotTorrentFileInfo } from '../types';
+import { join } from 'path';
 
 export default class TorrentParser {
 
@@ -8,7 +9,7 @@ export default class TorrentParser {
 	 * Parse torrent file
 	 */
 	public parse(data: Buffer | string): IDotTorrent {
-		const decodedData = bencodec.decode(data) as BencodeDictionary;;
+		const decodedData = bencodec.decode<BencodeDictionary>(data);
 
 		if (Array.isArray(decodedData) || Buffer.isBuffer(decodedData) || typeof decodedData !== 'object') {
 			throw new Error('TorrentParser failed to parse torrent. Invalid data');
@@ -137,11 +138,17 @@ export default class TorrentParser {
 					continue ;
 				}
 
-				const filePath = TorrentParser._getStringFromBencode(fileInfo.path[0]);
-	
-				if (!filePath) {
+				if (!fileInfo.path.length) {
 					continue ;
 				}
+
+				const pathItems = fileInfo.path.map((item: BencodeTypes) => TorrentParser._getStringFromBencode(item));
+
+				if (pathItems.some((item: string) => !item)) {
+					continue ;
+				}
+
+				const filePath = join(...pathItems as Array<string>);
 	
 				fileMap.set(filePath, fileInfo.length);
 			}
@@ -263,7 +270,7 @@ export default class TorrentParser {
 			return null;
 		}
 
-		return decodedData.info;
+		return decodedData.info as BencodeDictionary | null;
 	}
 
 	private static _getStringFromBencode(data: BencodeTypes): string | null {

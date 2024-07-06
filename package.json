@@ -1,6 +1,6 @@
 {
   "name": "dot-torrent",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Parse and create torrent files",
   "main": "./lib/index.js",
   "scripts": {
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/isolomak/dot-torrent#readme",
   "dependencies": {
-    "bencodec": "^2.4.3"
+    "bencodec": "^3.0.1"
   },
   "devDependencies": {
     "@types/jest": "^29.2.3",
